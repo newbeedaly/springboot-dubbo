@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="cn.newbeedaly.springbootorderserviceconsumer.service.impl"></context:component-scan>
+
+    <!-- 1. 配置当前服务/应用名称,不能与其他服务重名 -->
+    <dubbo:application name="order-service-consumer"></dubbo:application>
+
+    <!--2. 指定注册中心的位置 -->
+    <dubbo:registry protocol="zookeeper" address="127.0.0.1:2181"></dubbo:registry>
+
+    <!-- 属性配置优先级：1. 方法优先，接口次之，全局再次之 2.同级别，消费者优先 -->
+    <!-- retries 重试次数，不包含第一次调用 -->
+    <!--3. 声明需要远程调用的接口  check false 启动不检查 默认为true，timeout 超时限制 -->
+    <!-- 注意重试次数：幂等(select update delete 可以设置)  非幂等（add 不能设置重试次数）-->
+    <dubbo:reference interface="cn.newbeedaly.springbootinterface.service.UserService" id="userService" check="false" timeout="3000" retries="3">
+        <!--<dubbo:method name="getUserAddressList" timeout="1000"></dubbo:method>-->
+    </dubbo:reference>
+
+    <!-- 配置当前消费者的统一规则 , 所有的消费者服务都不检查 默认为true -->
+    <dubbo:consumer check="false" timeout="2000"></dubbo:consumer>
+
+    <!-- 注册中心启动检查 默认为true -->
+    <dubbo:registry  check="false"></dubbo:registry>
+</beans>
